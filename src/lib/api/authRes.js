@@ -19,14 +19,18 @@ export const ax_user_login = async (payload) => {
 
     if (
       res.data.code === 200 ||
-      res.data.code === 201 ||
-      res.data.code === 409
+      res.data.code === 201
     ) {
       return res.data;
     } else if (!res.data.success) {
       return res.data;
     }
-    return null;
+    return res.data;
+    // if (res.data.success) {
+    //   return res.data;  // Return data if login is successful
+    // } else {
+    //   return res.data;  // Return error message if success is false
+    // }
   } catch (e) {
     console.log("e.response.data: ", e.response ? e.response.data : e.message);
 
@@ -38,7 +42,7 @@ export const ax_user_login = async (payload) => {
 
 export const ax_user_signup = async (payload) => {
   try {
-    const res = await APICall.post("auth/signup", payload, {
+    const res = await APICall.post("api/signup", payload, {
       headers: { "Content-Type": "application/json" },
     });
 

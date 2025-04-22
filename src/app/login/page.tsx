@@ -1,6 +1,6 @@
 "use client";
 
-import { ChangeEvent, FormEvent, useCallback, useState } from "react";
+import { ChangeEvent, FormEvent, useCallback, useEffect, useState } from "react";
 import FormInput from "../../Components/FormInput";
 import { ax_user_login } from "../../lib/api/authRes"
 
@@ -23,6 +23,7 @@ const LoginPage = () => {
   // const [formData, setFormData] = useState(() => ({ ...initialFormData }));
   // const [errors, setErrors] = useState('');
   const [isLoading, setIsLoading] = useState(false);
+  const [rememberMe, setRememberMe] = useState(false);
 
   // const handleChange = useCallback((fieldName, event) => {
   //   const { name, value } = event.target;
@@ -32,6 +33,19 @@ const LoginPage = () => {
   //   setErrors((prev) => ({ ...prev, [name]: error }));
   // }, []);
 
+  useEffect(() => {
+    const storedIdentifier = localStorage.getItem('identifier');
+    const storedPassword = localStorage.getItem('password');
+
+    if (storedIdentifier && storedPassword) {
+      setFormData({
+        identifier: storedIdentifier,
+        password: storedPassword,
+      });
+      setRememberMe(true);
+    }
+  }, []);
+
   const handleChange = useCallback(
     (fieldName: keyof LoginForm, event: ChangeEvent<HTMLInputElement>) => {
       const { name, value } = event.target;
@@ -40,10 +54,20 @@ const LoginPage = () => {
 
       const error = validateField(name as keyof LoginForm, value);
       setErrors((prev) => ({ ...prev, [name]: error || "" }));
+
+      if (name === "identifier" || name === "password") {
+        if (rememberMe) {
+          localStorage.setItem('identifier', formData.identifier);
+          localStorage.setItem('password', formData.password);
+        }
+      }
     },
-    []
+    [formData, rememberMe]
   );
 
+  const handleChecked = (e: ChangeEvent<HTMLInputElement>) => {
+    setRememberMe(e.target.checked);
+  };
   // const validateField = (name, value) => {
   //   const validators = {
   //     identifier: (value) =>
@@ -150,14 +174,20 @@ const LoginPage = () => {
     setErrors({}); 
   
     try {
-      console.log("Form Submitted", formData);
-
+      
       const res = await ax_user_login(formData);
+
+      console.log("Login Response:", res);
   
       if (res?.success) {
+        localStorage.setItem('identifier', formData.identifier);
+        localStorage.setItem('password', formData.password);
         // toast.success("Login successful.");
-        setFormData(initialFormData);
+        setFormData(initialFormData); 
+        setRememberMe(false);       
       } else {
+        localStorage.removeItem('identifier');
+        localStorage.removeItem('password');
         // toast.error(res?.message || "Login Failed");
         // setApiErr(res?.message || "Login failed");
         setApiErr(res?.data.description || "Unknown error occurred");
@@ -207,7 +237,10 @@ const LoginPage = () => {
 
         <div className="flex items-center justify-between text-sm text-gray-600">
           <label className="flex items-center">
-            <input type="checkbox" className="h-4 w-4 mr-2 border-gray-300 focus:ring-indigo-400" />
+            <input type="checkbox"
+            checked={rememberMe}
+            onChange={handleChecked}
+            className="h-4 w-4 mr-2 border-gray-300 focus:ring-indigo-400" />
             Remember me
           </label>
           <a href="#" className="text-indigo-600 hover:underline">
