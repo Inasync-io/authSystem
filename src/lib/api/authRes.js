@@ -11,7 +11,7 @@ import { APICall } from ".";
 
 export const ax_user_login = async (payload) => {
   try {
-    const res = await APICall.post("auth/login", payload, {
+    const res = await APICall.post("/api/login", payload, {
       headers: { "content-type": "application/json" },
     });
 
