@@ -40,9 +40,33 @@ export const ax_user_login = async (payload) => {
   }
 };
 
+export const ax_user_forgotPassword = async (payload) => {
+  try {
+    const res = await APICall.post('/api/forgot-password', payload, {
+      headers: { "Content-Type": "application/json"},
+    });
+    
+    console.log("res - " + JSON.stringify(res.data));
+
+    if (res.data.code === 200 || res.data.code === 201) {
+      return res.data;
+    } else if (!res.data.success) {
+      return res.data;
+    }
+    return res.data;
+    
+  } catch (e) {
+    console.log("e.response.data: ", e.response ? e.response.data : e.message);
+
+    if (e.response?.data.code !== 200 || e.response.data.code !== 201)
+      return e.response;
+    else return null;
+  }
+}
+
 export const ax_user_signup = async (payload) => {
   try {
-    const res = await APICall.post("api/signup", payload, {
+    const res = await APICall.post("/api/signup", payload, {
       headers: { "Content-Type": "application/json" },
     });
 
@@ -57,7 +81,7 @@ export const ax_user_signup = async (payload) => {
     } else if (!res.data.success) {
       return res.data;
     }
-    return null;
+    return res.data;
   } catch (e) {
     console.log("e.response.data: ", e.response ? e.response.data : e.message);
 
