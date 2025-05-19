@@ -15,7 +15,7 @@ export const ax_user_login = async (payload) => {
       headers: { "content-type": "application/json" },
     });
 
-    console.log("res - " + JSON.stringify(res.data));
+    // console.log("res - " + JSON.stringify(res.data));
 
     if (
       res.data.code === 200 ||
@@ -25,7 +25,7 @@ export const ax_user_login = async (payload) => {
     } else if (!res.data.success) {
       return res.data;
     }
-    return res.data;
+    return null;
     // if (res.data.success) {
     //   return res.data;  // Return data if login is successful
     // } else {
@@ -46,14 +46,14 @@ export const ax_user_forgotPassword = async (payload) => {
       headers: { "Content-Type": "application/json"},
     });
     
-    console.log("res - " + JSON.stringify(res.data));
+    // console.log("res - " + JSON.stringify(res.data));
 
     if (res.data.code === 200 || res.data.code === 201) {
       return res.data;
     } else if (!res.data.success) {
       return res.data;
     }
-    return res.data;
+    return null;
     
   } catch (e) {
     console.log("e.response.data: ", e.response ? e.response.data : e.message);
@@ -70,7 +70,7 @@ export const ax_user_signup = async (payload) => {
       headers: { "Content-Type": "application/json" },
     });
 
-    console.log("res - " + JSON.stringify(res.data));
+    // console.log("res - " + JSON.stringify(res.data));
 
     if (
       res.data.code === 200 ||
@@ -81,7 +81,7 @@ export const ax_user_signup = async (payload) => {
     } else if (!res.data.success) {
       return res.data;
     }
-    return res.data;
+    return null;
   } catch (e) {
     console.log("e.response.data: ", e.response ? e.response.data : e.message);
 
