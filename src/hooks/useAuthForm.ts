@@ -5,6 +5,7 @@ export interface LoginForm {
   identifier: string;
   password: string;
   confirmPassword: string;
+  code?: string;
 }
 
 export type LoginErrors = Partial<Record<keyof LoginForm, string>>;
@@ -14,6 +15,7 @@ const initialFormData: LoginForm = {
   identifier: "",
   password: "",
   confirmPassword: "",
+  code: "",
 };
 
 // const useAuthForm = () => {
@@ -79,6 +81,12 @@ const useAuthForm = (
           : value !== formData.password
           ? "Passwords do not match"
           : null,
+      code: (value) =>
+        !value
+          ? "Verification code is required"
+          : value.length !== 6
+          ? "Verification code must be 6 digits"
+          : null
     };
 
     // return validators[name](value);
