@@ -5,9 +5,12 @@ import FormInput from "../../Components/FormInput";
 import useAuthForm from "../../hooks/useAuthForm";
 import Link from "next/link";
 import toast from "react-hot-toast";
+import { useRouter } from "next/navigation";
 import { ax_user_signup } from "../../lib/api/authRes";
 
 const SignupPage = () => {
+  const router = useRouter();
+
   const {
     formData,
     setFormData,
@@ -45,9 +48,14 @@ const SignupPage = () => {
       if (res?.success) {
       toast.success(res.message || "Signup successful!");
       setFormData(initialFormData);
+
+      router.push("/verify");
+    } else if (res.data?.code === 409) {   
+      toast.error(res.data?.message || "Email already exists");
+      setApiErr(res.data?.description || "Email already exists");      
     } else {
-      toast.error(res?.message || "Signup failed");
-      setApiErr(res?.description || "Unknown error occurred");
+      toast.error(res.data?.message || "Signup failed");
+      setApiErr(res.data?.description || "Unknown error occurred");
     }
     } catch (error: any) {
       console.error("Signup error:", error);
