@@ -45,7 +45,7 @@ export const ax_user_forgotPassword = async (payload) => {
     const res = await APICall.post('/api/forgot-password', payload, {
       headers: { "Content-Type": "application/json"},
     });
-    
+
     // console.log("res - " + JSON.stringify(res.data));
 
     if (res.data.code === 200 || res.data.code === 201) {
@@ -62,7 +62,7 @@ export const ax_user_forgotPassword = async (payload) => {
       return e.response;
     else return null;
   }
-}
+};
 
 export const ax_user_signup = async (payload) => {
   try {
