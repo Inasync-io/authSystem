@@ -24,7 +24,7 @@ const SignupPage = () => {
     setApiErr,
     isLoading,
     setIsLoading,
-  } = useAuthForm([ "name", "identifier", "password", "confirmPassword"]);
+  } = useAuthForm([ "name", "identifier", "password", "confirmPassword" ]);
 
   const handleSubmit = async (e: FormEvent<HTMLFormElement>) => {
     e.preventDefault();
@@ -43,20 +43,20 @@ const SignupPage = () => {
 
     try {
       const res = await ax_user_signup(formData);
-      console.log("Signup response:", res);
+      // console.log("Signup response:", res);
 
       if (res?.success) {
-      toast.success(res.message || "Signup successful!");
-      setFormData(initialFormData);
+        toast.success(res.message || "Signup successful!");
+        setFormData(initialFormData);
 
-      router.push("/verify");
-    } else if (res.data?.code === 409) {   
-      toast.error(res.data?.message || "Email already exists");
-      setApiErr(res.data?.description || "Email already exists");      
-    } else {
-      toast.error(res.data?.message || "Signup failed");
-      setApiErr(res.data?.description || "Unknown error occurred");
-    }
+        router.push("/verify");
+      } else if (res.data?.code === 409) {
+        toast.error(res.data?.message || "Email already exists");
+        setApiErr(res.data?.description || "Email already exists");
+      } else {
+        toast.error(res.data?.message || "Signup failed");
+        setApiErr(res.data?.description || "Unknown error occurred");
+      }
     } catch (error: any) {
       console.error("Signup error:", error);
       toast.error("Something went wrong.");
@@ -76,7 +76,7 @@ const SignupPage = () => {
         <h1 className="text-2xl font-bold text-center text-gray-800 font-poppins">
           SIGNUP
         </h1>
-         <FormInput
+        <FormInput
           type="text"
           name="name"
           placeholder="Name"
