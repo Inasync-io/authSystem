@@ -4,7 +4,7 @@ export interface LoginForm {
   name: string;
   identifier: string;
   password: string;
-  confirmPassword: string;
+  confirmPassword?: string;
   code?: string;
 }
 
@@ -38,7 +38,7 @@ const useAuthForm = (
       name: "", 
       identifier: storedIdentifier,
       password: storedPassword,
-      confirmPassword: storedPassword, 
+      // confirmPassword: storedPassword, 
     });
       setRememberMe(true);
     }
