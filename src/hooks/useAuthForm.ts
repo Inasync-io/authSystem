@@ -1,4 +1,4 @@
-import { useCallback, useEffect, useState, ChangeEvent } from "react";
+import { useCallback, useState, ChangeEvent } from "react";
 
 export interface LoginForm {
   name: string;
@@ -6,6 +6,7 @@ export interface LoginForm {
   password: string;
   confirmPassword?: string;
   code?: string;
+  rememberMe?: boolean;
 }
 
 export type LoginErrors = Partial<Record<keyof LoginForm, string>>;
@@ -16,33 +17,34 @@ const initialFormData: LoginForm = {
   password: "",
   confirmPassword: "",
   code: "",
+  rememberMe: false,
 };
 
 // const useAuthForm = () => {
 const useAuthForm = (
-  requiredFields: (keyof LoginForm)[] = ["identifier", "password"]
+  requiredFields: (keyof LoginForm)[] = ["identifier", "password", "rememberMe"]
 ) => {
   const [formData, setFormData] = useState<LoginForm>({ ...initialFormData });
   const [errors, setErrors] = useState<LoginErrors>({});
-  const [rememberMe, setRememberMe] = useState(false);
+  // const [rememberMe, setRememberMe] = useState(false);
   const [apiErr, setApiErr] = useState<string>("");
   const [isLoading, setIsLoading] = useState(false);
 
-  useEffect(() => {
-    const storedIdentifier = localStorage.getItem("identifier");
-    const storedPassword = localStorage.getItem("password");
-    // const storedConfirmPassword = localStorage.getItem("password");
+  // useEffect(() => {
+  //   const storedIdentifier = localStorage.getItem("identifier");
+  //   const storedPassword = localStorage.getItem("password");
+  //   // const storedConfirmPassword = localStorage.getItem("password");
 
-    if (storedIdentifier && storedPassword) {
-       setFormData({
-      name: "", 
-      identifier: storedIdentifier,
-      password: storedPassword,
-      // confirmPassword: storedPassword, 
-    });
-      setRememberMe(true);
-    }
-  }, []);
+  //   if (storedIdentifier && storedPassword) {
+  //     setFormData({
+  //       name: "",
+  //       identifier: storedIdentifier,
+  //       password: storedPassword,
+  //       // confirmPassword: storedPassword,
+  //     });
+  //     setRememberMe(true);
+  //   }
+  // }, []);
 
   const validateField = (
     name: keyof LoginForm,
@@ -86,7 +88,8 @@ const useAuthForm = (
           ? "Verification code is required"
           : value.length !== 6
           ? "Verification code must be 6 digits"
-          : null
+          : null,
+      rememberMe: (_value) => null, // Not a required field, always valid
     };
 
     // return validators[name](value);
@@ -95,21 +98,24 @@ const useAuthForm = (
 
   const handleChange = useCallback(
     (fieldName: keyof LoginForm, event: ChangeEvent<HTMLInputElement>) => {
-      const { name, value } = event.target;
+      const { type, name, value, checked } = event.target;
 
-      setFormData((prev) => ({ ...prev, [name]: value }));
+      setFormData((prev) => ({
+        ...prev,
+        [name]: type === "checkbox" ? checked : value,
+      }));
 
       // const error = validateField(name as keyof LoginForm, value);
       // setErrors((prev) => ({ ...prev, [name]: error || "" }));
 
-      if (name === "identifier" || name === "password") {
-        if (rememberMe) {
-          localStorage.setItem("identifier", formData.identifier);
-          localStorage.setItem("password", formData.password);
-        }
-      }
+      // if (name === "identifier" || name === "password") {
+      //   if (rememberMe) {
+      //     localStorage.setItem("identifier", formData.identifier);
+      //     localStorage.setItem("password", formData.password);
+      //   }
+      // }
     },
-    [formData, rememberMe]
+    [formData]
   );
 
   //   const validateForm = (): LoginErrors => {
@@ -125,14 +131,22 @@ const useAuthForm = (
   const validateForm = (): LoginErrors => {
     const newErrors: LoginErrors = {};
     requiredFields.forEach((field) => {
-      const error = validateField(field, formData[field]);
+      const value = formData[field];
+      const error = validateField(
+        field,
+        typeof value === "boolean" ? value.toString() : value ?? ""
+      );
       if (error) newErrors[field] = error;
     });
     return newErrors;
   };
 
   const handleChecked = (e: ChangeEvent<HTMLInputElement>) => {
-    setRememberMe(e.target.checked);
+    // setRememberMe(e.target.checked);
+    setFormData((prev) => ({
+      ...prev,
+      rememberMe: e.target.checked,
+    }));
   };
 
   return {
@@ -140,8 +154,6 @@ const useAuthForm = (
     setFormData,
     errors,
     setErrors,
-    rememberMe,
-    setRememberMe,
     handleChecked,
     handleChange,
     validateForm,
