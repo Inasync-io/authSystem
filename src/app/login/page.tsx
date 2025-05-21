@@ -1,6 +1,6 @@
 "use client";
 
-import { FormEvent, useState } from "react";
+import { FormEvent, useEffect, useState } from "react";
 import useAuthForm from "../../hooks/useAuthForm";
 import FormInput from "../../Components/FormInput";
 import { ax_user_login } from "../../lib/api/authRes";
@@ -18,8 +18,6 @@ const LoginPage = () => {
     setFormData,
     errors,
     setErrors,
-    rememberMe,
-    setRememberMe,
     handleChange,
     handleChecked,
     validateForm,
@@ -28,7 +26,23 @@ const LoginPage = () => {
     setApiErr,
     isLoading,
     setIsLoading,
-  } = useAuthForm(['identifier', 'password']);
+  } = useAuthForm(["identifier", "password"]);
+
+  // console.log("formData", formData);
+  
+  useEffect(() => {
+    const identifier = localStorage.getItem("identifier");
+    const password = localStorage.getItem("password");
+
+    if (identifier && password) {
+      setFormData((prev) => ({
+        ...prev,
+        identifier,
+        password,
+        rememberMe: true,
+      }));
+    }
+  }, []);
 
   const handleSubmit = async (e: FormEvent<HTMLFormElement>) => {
     e.preventDefault();
@@ -50,7 +64,7 @@ const LoginPage = () => {
       console.log("Login Response:", res);
 
       if (res?.success) {
-        if (rememberMe) {
+        if (formData.rememberMe) {
           localStorage.setItem("identifier", formData.identifier);
           localStorage.setItem("password", formData.password);
         } else {
@@ -60,8 +74,9 @@ const LoginPage = () => {
         toast.success("Login successful.");
         localStorage.setItem("auth_token", res.user._id);
         setFormData(initialFormData);
-        setRememberMe(false);
+        // setRememberMe(false);
 
+        console.log("cookies", document.cookie);
         router.push("/");
       } else {
         toast.error(res?.message || "Login Failed");
@@ -112,8 +127,9 @@ const LoginPage = () => {
           <label className="flex items-center">
             <input
               type="checkbox"
-              checked={rememberMe}
-              onChange={handleChecked}
+              name="rememberMe"
+              checked={formData.rememberMe}
+              onChange={(e) => handleChange("rememberMe", e)}
               className="h-4 w-4 mr-2 border-gray-300 focus:ring-indigo-400"
             />
             Remember me
