@@ -10,6 +10,11 @@ type Props = {
   checked?: boolean;
   label?: string;
   error?: string | null;
+  maxLength?: number;
+  inputRef?: React.Ref<HTMLInputElement>;
+  onKeyDown?: (e: React.KeyboardEvent<HTMLInputElement>) => void;
+  // style?: React.CSSProperties;
+  variant?: "default" | "code";
 };
 
 const FormInput: React.FC<Props> = ({
@@ -21,6 +26,11 @@ const FormInput: React.FC<Props> = ({
   checked,
   label,
   error,
+  maxLength,
+  inputRef,
+  onKeyDown,
+  // style,
+  variant = "default",
 }) => {
   if (type === "checkbox") {
     return (
@@ -48,13 +58,26 @@ const FormInput: React.FC<Props> = ({
         placeholder={placeholder}
         value={value}
         onChange={onChange}
+        maxLength={maxLength} 
+        ref={inputRef}
+        onKeyDown={onKeyDown}
+        // style={style}
         // className="w-full px-4 py-2 bg-gray-200 focus:outline-none focus:ring-2 focus:ring-indigo-500"
-        className={`w-full px-3 py-2 bg-gray-100 focus:outline-none focus:ring-2 focus:ring-indigo-500 ${
-          error ? "border-red-500 pr-10" : "outline-none"
+        // className={`w-full px-3 py-2 bg-gray-100 focus:outline-none focus:ring-2 focus:ring-indigo-500 ${
+        //   error ? "border-red-500 pr-10" : "outline-none"
+        // }`}
+        className={`${
+          variant === "code"
+            ? "w-11 h-11 text-xl text-center px-3 py-2 bg-gray-100 focus:outline-none focus:ring-2 focus:ring-indigo-500"
+            : "w-full px-3 py-2 bg-gray-100 focus:outline-none focus:ring-2 focus:ring-indigo-500"
+        } ${
+          error && variant !== "code"
+            ? "border-red-500 pr-10"
+            : "outline-none"
         }`}
       />
 
-      {error && (
+      {error && variant !== "code" &&(
         <svg
           className="absolute w-5 h-5 text-red-500 right-2 top-1/2 -translate-y-1/2"
           fill="none"
