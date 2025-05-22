@@ -24,7 +24,7 @@ const SignupPage = () => {
     setApiErr,
     isLoading,
     setIsLoading,
-  } = useAuthForm([ "name", "identifier", "password", "confirmPassword" ]);
+  } = useAuthForm(["name", "identifier", "password", "confirmPassword"]);
 
   const handleSubmit = async (e: FormEvent<HTMLFormElement>) => {
     e.preventDefault();
@@ -49,7 +49,8 @@ const SignupPage = () => {
         toast.success(res.message || "Signup successful!");
         setFormData(initialFormData);
 
-        router.push("/verify");
+        // router.push("/verify");
+        router.push(`/verify?identifier=${encodeURIComponent(formData.identifier)}`);
       } else if (res.data?.code === 409) {
         toast.error(res.data?.message || "Email already exists");
         setApiErr(res.data?.description || "Email already exists");
@@ -84,9 +85,7 @@ const SignupPage = () => {
           onChange={(e) => handleChange("name", e)}
           error={errors.name}
         />
-        {errors.name && (
-          <p className="text-sm text-red-500">{errors.name}</p>
-        )}
+        {errors.name && <p className="text-sm text-red-500">{errors.name}</p>}
 
         <FormInput
           type="text"
