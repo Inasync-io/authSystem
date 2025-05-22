@@ -36,6 +36,40 @@ export const ax_user_signup = async (payload) => {
   }
 };
 
+export const ax_user_varify = async (payload) => {  
+  try {
+    const identifier = payload.identifier;
+
+    const isEmail = /^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(identifier);
+    const isPhone = /^\d{10}$/.test(identifier);
+    
+    // console.log("payload", payload);
+
+    const endpoint = isEmail
+      ? "/api/verify-email"
+      : isPhone
+      ? "/api/verify-phone"
+      : null;
+
+      // console.log("end- ", endpoint);
+    if (!endpoint) {
+      throw new Error("Invalid identifier");
+    }
+    const res = await APICall.post(endpoint, payload, {
+      headers: { "Content-Type": "application/json" },
+    });
+
+    if (res.data.code === 200 || res.data.code === 201) {
+      return res.data;
+    } else if (!res.data.success) {
+      return res.data;
+    }
+  } catch (error) {
+    console.error("Error verifying user:", error);
+    throw error;
+  }
+};
+
 export const ax_user_login = async (payload) => {
   try {
     const res = await APICall.post("/api/login", payload, {
